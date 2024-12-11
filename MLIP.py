@@ -9,6 +9,7 @@ from ase.calculators.genericfileio import (
     GenericFileIOCalculator,
     read_stdout)
 
+
 class MLIPprofile(BaseProfile):
   
     configvars = {'model'}
@@ -25,16 +26,16 @@ class MLIPprofile(BaseProfile):
         return self.parse_version(stdout)
 
         
-
 class MLIPtemplate(CalculatorTemplate):
   
     _label = "mlip"
-
+  
     def __init__(self, name,  waterfield, mapping_atoms):
 
         self.name = name
         self.waterfield = waterfield
         self.mapping_atoms = mapping_atoms
+    
         self.inputname = "_in.cfg"
         self.outputname = "_stdout"
         self.errorname = "_error"
@@ -45,8 +46,11 @@ class MLIPtemplate(CalculatorTemplate):
             self.mapping_atoms_r[j]=i
 
 
-    # def write_input(self, profile, directory, atoms, parameters, properties):
-    def write_input(self, profile, directory, atoms, parameters=None, 
+    def write_input(self, 
+                    profile, 
+                    directory, 
+                    atoms, 
+                    parameters=None, 
                     properties=["energy","forces","stress"]):
 
         self.number_of_atoms_in_frame=len(atoms)
@@ -164,13 +168,12 @@ class MLIPtemplate(CalculatorTemplate):
 
             structures.append(atoms)
             self.results = atoms.calc.results
-            results = atoms.calc.results
+
         return self.results
 
 
     def load_profile(self, cfg):
         return MLIPprofile.from_config(cfg, self.name)
-
 
 
 class MLIP(GenericFileIOCalculator):
@@ -183,13 +186,13 @@ class MLIP(GenericFileIOCalculator):
         self.waterfield = waterfield
         self.mapping_atoms = mapping_atoms
         template = MLIPtemplate(name="mlip", 
-                                    waterfield=self.waterfield, 
-                                    mapping_atoms=self.mapping_atoms)
+                                waterfield=self.waterfield, 
+                                mapping_atoms=self.mapping_atoms)
 
         super().__init__(
               profile=profile,
               template=template,
               directory=directory,
               parameters=None,
-          )
+            )
 
